@@ -24,5 +24,8 @@
   "dependencies": {
     "koa": "^1.1.2",
     "koa-route": "^3.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.8.1"
   }
 }
