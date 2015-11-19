@@ -26,7 +26,7 @@ body {
 /* Home Page Carousel */
 
 header.carousel {
-    height: 50%;
+    height: 60%;
 }
 
 header.carousel .item,
@@ -80,6 +80,9 @@ footer {
     .img-related {
         margin-bottom: 30px;
     }
+    header.carousel .carousel {
+        height: 70%;
+    }
 }
 
 @media(max-width:767px) {
@@ -88,6 +91,6 @@ footer {
     }
 
     header.carousel .carousel {
-        height: 70%;
+        height: 80%;
     }
 }
