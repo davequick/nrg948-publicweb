@@ -10,7 +10,7 @@ app.use(common.logger('dev'));
 app.use(common.static(__dirname + '/static'));
 
 app.use(function *() {
-    this.body = "Hello World";
+    this.body = "Page not found.";
 });
 
 var server = app.listen(4000, function () {
