@@ -2,100 +2,76 @@
 var app = require('koa')();
 var common = require('koa-common');
 var router = require('koa-router')();
+var hbs = require('koa-hbs');
+var find = require('list-files');
+var Q = require('q');
 
-var db = {
-    tobi: { name: 'tobi', species: 'ferret' },
-    loki: { name: 'loki', species: 'ferret' },
-    jane: { name: 'jane', species: 'elephant' }
+
+var settings = {
+    viewPathRelative: 'views',
+    viewPath: __dirname + '/views/',
+    partialsPath: __dirname + '/views/partials/',
+    staticPath: __dirname + '/static/'
 };
 
-var pets = {
-    list: function*(next){
-        var names = Object.keys(db);
-        this.body = 'pets: ' + names.join(', ');
+function fileList(directory, mask){
+    var deferred = Q.defer();
+    find(function(files) {
+        deferred.resolve(files);
+    }, {
+        dir: directory,
+        name: mask
+    });
+    return deferred.promise;
+}
+
+class Views {
+
+    static *main(next){
+      this.status == 200;
+      yield this.render('main', {title: 'koa-hbs'});
+    }
+
+    static *populateTemplateName(templateName, next){
+        this.template = {name: templateName};
+        yield next
+    }
+
+    static *listTemplates(next) {
+        this.status == 200;
+        this.body = yield fileList(settings.viewPathRelative, 'hbs');
+    }
+
+    static *generic(next) {
+        yield this.render(this.template.name, {title: this.template.name});
+        this.status == 200;
         yield next;
-    },
-    lookup: function*(name, next){
-        this.pet = db[name];
-        if (!this.pet) return this.throw('cannot find that pet', 404);
-        yield next;
-    },
-    show: function*(next){
-        this.body = this.pet.name + ' is a ' + this.pet.species;
-        yield next;
+    }
+
+    static *eventPopulate(event, next) {
+      yield next;
     }
 };
 
-
-
 router
-    .param('name', pets.lookup)
-    .get('/pets', pets.list)
-    .get('/pets/:name', pets.show);
-
-router.get('/', function *(next) {
-    this.status = 200;
-    this.body = 'Hello World!';
-    yield next;
-});
+    .param('template', Views.populateTemplateName)
+    .param('event', Views.eventPopulate)
+    .get('/', Views.main)
+    .get('/templates', Views.listTemplates)
+    .get('/portfolio', Views.portfolio);
+    .get('/portfolio/:event', Views.portfolio);
+    .get('/:template', Views.generic);
 
 app
+    .use(common.responseTime())
+    .use(common.logger('dev'))
+    .use(hbs.middleware({ viewPath: settings.viewPath, partialsPath: settings.partialsPath }))
     .use(router.routes())
-    .use(router.allowedMethods());
-
+    .use(router.allowedMethods())
+    .use(common.static(settings.staticPath, {defer: true}));
 
 var server = app.listen(1234, function () {
     console.log('Listening on port %d', server.address().port);
 });
 
-function delay(milliseconds) {
-    var deferred = Q.defer();
-    console.log('start: '+milliseconds+'ms, '+ new Date());
-    setTimeout(function(){
-        console.log('delayed ' + milliseconds + 'ms '+ new Date());
-        deferred.resolve(milliseconds);
-    }, milliseconds);
-    return deferred.promise;
-}
 
-//var hbs = require('koa-hbs')
-//var Q = require('q');
-//// enable logger middleware
-//app.use(common.logger('dev'));
-//app.use(common.responseTime());
-////app.use(function *simpleSample(next){
-////    console.log('before 1: '+ new Date());
-////    yield next;
-////    yield delay(1000);
-////    yield delay(2000);
-////   console.log('after 1'+ new Date());
-////});
-//app.use(function *simpleSample2(next){
-//    console.log('before 2'+ new Date());
-//    yield next;
-//    console.log('after 2'+ new Date());
-//});
-//
-//
-//
-//app.use(common.responseTime());
-//
-//// enable static middleware
-//app.use(common.static(__dirname + '/static', {defer: true}));
-//
-//
-//app.use(hbs.middleware({
-//    viewPath: __dirname + '/views',
-//    partialsPath: __dirname + '/views/partials'
-//}));
-//
-////app.use(function *() {
-//////    this.status == 200;
-////    yield this.render('main', {title: 'koa-hbs'});
-//////    this.body = "Page not found.";
-////});
-//
-//
-//var server = app.listen(1234, function () {
-//    console.log('Listening on port %d', server.address().port);
-//});

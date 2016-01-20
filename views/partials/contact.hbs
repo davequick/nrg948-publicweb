@@ -1,0 +1,20 @@
+    <div class="thumbnail">
+        <img class="img-responsive" src="{{thumbnail}}" alt="Photo of {{name}}">
+        <div class="caption">
+            <h3>{{name}}<br>
+                <small>{{title}}</small>
+            </h3>
+            <p>{{description}}</p>
+            <ul class="list-inline">
+                {{#if facebook}}
+                        <li><a href="https://www.facebook.com/{{facebook}}"><i class="fa fa-2x fa-facebook-square"></i></a></li>
+                {{/if}}
+                {{#if linkedin}}
+                  <li><a href="https://www.linkedin.com/in/{{linkedin}}"><i class="fa fa-2x fa-linkedin-square"></i></a></li>
+                {{/if}}
+                {{#if twitter}}
+                    <li><a href="https://twitter.com/{{twitter}}"><i class="fa fa-2x fa-twitter-square"></i></a></li>
+                {{/if}}
+            </ul>
+        </div>
+    </div>
