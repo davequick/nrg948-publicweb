@@ -1,4 +1,6 @@
 'use strict';
+const fs = require('fs');
+
 var app = require('koa')();
 var common = require('koa-common');
 var router = require('koa-router')();
@@ -6,12 +8,12 @@ var hbs = require('koa-hbs');
 var find = require('list-files');
 var Q = require('q');
 
-
 var settings = {
     viewPathRelative: 'views',
     viewPath: __dirname + '/views/',
     partialsPath: __dirname + '/views/partials/',
-    staticPath: __dirname + '/static/'
+    staticPath: __dirname + '/static/',
+    portfolio: __dirname + '/static/portfolio/'
 };
 
 function fileList(directory, mask){
@@ -24,6 +26,23 @@ function fileList(directory, mask){
     });
     return deferred.promise;
 }
+
+class TemplateDirectory {
+    constructor(path) {
+        this.path = path;
+        return this;
+    }
+
+    readDirectory() {
+        let files = Q.defer();
+        fs.readdir(this.path, function(err, filesFound){
+            files.resolve(filesFound);
+        });
+        return files.promise;
+    }
+}
+
+
 
 class Views {
 
@@ -49,7 +68,16 @@ class Views {
     }
 
     static *eventPopulate(event, next) {
-      yield next;
+        this.status=200;
+        this.event= event;
+        yield next;
+    }
+    static *portfolio(next) {
+        var dir = new TemplateDirectory(settings.portfolio);
+        this.status = 200;
+        var allfiles = yield dir.readDirectory();
+        this.event =  this.event || allfiles;
+        this.body = "param name:" + this.event;
     }
 };
 
@@ -58,8 +86,8 @@ router
     .param('event', Views.eventPopulate)
     .get('/', Views.main)
     .get('/templates', Views.listTemplates)
-    .get('/portfolio', Views.portfolio);
-    .get('/portfolio/:event', Views.portfolio);
+    .get('/portfolio/:event', Views.portfolio)
+    .get('/portfolio/', Views.portfolio)
     .get('/:template', Views.generic);
 
 app
