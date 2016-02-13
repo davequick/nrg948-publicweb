@@ -22,9 +22,16 @@
   },
   "homepage": "https://github.com/davequick/nrg948-publicweb#readme",
   "dependencies": {
+    "kerberos": "0.0.17",
     "koa": "^1.1.2",
     "koa-common": "^1.2.0",
-    "koa-route": "^3.0.0"
+    "koa-handlebars": "^0.5.7",
+    "koa-hbs": "^0.7.0",
+    "koa-route": "^3.0.0",
+    "koa-router": "^5.3.0",
+    "list-files": "^1.1.0",
+    "mongodb": "^2.1.2",
+    "q": "^1.4.1"
   },
   "devDependencies": {
     "nodemon": "^1.8.1"
