@@ -42,13 +42,11 @@ class TemplateDirectory {
     }
 }
 
-
-
 class Views {
 
     static *main(next){
-      this.status == 200;
-      yield this.render('main', {title: 'koa-hbs'});
+      this.status = 200;
+      yield this.render('main', {title: 'NRG948 Home'});
     }
 
     static *populateTemplateName(templateName, next){
@@ -57,26 +55,31 @@ class Views {
     }
 
     static *listTemplates(next) {
-        this.status == 200;
+        this.status = 200;
         this.body = yield fileList(settings.viewPathRelative, 'hbs');
     }
 
     static *generic(next) {
         yield this.render(this.template.name, {title: this.template.name});
-        this.status == 200;
+        this.status = 200;
         yield next;
     }
 
     static *eventPopulate(event, next) {
-        this.status=200;
-        this.event= event;
+        this.status = 200;
+        this.event = event;
         yield next;
     }
     static *portfolio(next) {
         var dir = new TemplateDirectory(settings.portfolio);
         this.status = 200;
         var allfiles = yield dir.readDirectory();
-        this.event =  this.event || allfiles;
+        this.body = "param name:" + allfiles;
+    }
+    static *portfolioEvent(next) {
+        var dir = new TemplateDirectory(settings.portfolio);
+        this.status = 200;
+        this.event =  this.event;
         this.body = "param name:" + this.event;
     }
 };
@@ -86,7 +89,7 @@ router
     .param('event', Views.eventPopulate)
     .get('/', Views.main)
     .get('/templates', Views.listTemplates)
-    .get('/portfolio/:event', Views.portfolio)
+    .get('/portfolio/:event', Views.portfolioEvent)
     .get('/portfolio/', Views.portfolio)
     .get('/:template', Views.generic);
 
@@ -101,5 +104,3 @@ app
 var server = app.listen(1234, function () {
     console.log('Listening on port %d', server.address().port);
 });
-
-
