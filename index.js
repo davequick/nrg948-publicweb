@@ -101,6 +101,6 @@ app
     .use(router.allowedMethods())
     .use(common.static(settings.staticPath, {defer: true}));
 
-var server = app.listen(1234, function () {
+var server = app.listen(80, function () {
     console.log('Listening on port %d', server.address().port);
 });
