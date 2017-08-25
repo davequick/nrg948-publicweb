@@ -82,9 +82,14 @@ class Views {
         this.event =  this.event;
         this.body = "param name:" + this.event;
     }
+    static *allredir(next){
+    this.redirect('https://nrg948.teamapp.com');
+    }
 };
 
-router
+
+
+/*router
     .param('template', Views.populateTemplateName)
     .param('event', Views.eventPopulate)
     .get('/', Views.main)
@@ -92,7 +97,8 @@ router
     .get('/portfolio/:event', Views.portfolioEvent)
     .get('/portfolio/', Views.portfolio)
     .get('/:template', Views.generic);
-
+*/
+router.get('/', Views.allredir);
 app
     .use(common.responseTime())
     .use(common.logger('dev'))
